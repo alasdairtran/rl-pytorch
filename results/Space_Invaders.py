@@ -1,9 +1,10 @@
 import gym
-from environments.Atari_Environment import make_atari_game
+
 from agents.DQN_agents.DDQN import DDQN
 from agents.hierarchical_agents.HRL.HRL import HRL
 from agents.hierarchical_agents.HRL.Model_HRL import Model_HRL
 from agents.Trainer import Trainer
+from environments.Atari_Environment import make_atari_game
 from utilities.data_structures.Config import Config
 
 config = Config()
@@ -32,11 +33,11 @@ buffer_size = 1000000
 batch_size = 256
 batch_norm = False
 embedding_dimensionality = 10
-gradient_clipping_norm = 0.5 #needs to be optimised
+gradient_clipping_norm = 0.5  # needs to be optimised
 update_every_n_steps = 1
 learning_iterations = 1
-epsilon_decay_rate_denominator = 2 #150
-episodes_per_round = 50 #80
+epsilon_decay_rate_denominator = 2  # 150
+episodes_per_round = 50  # 80
 discount_rate = 0.99
 tau = 0.004
 sequitur_k = 2
@@ -165,9 +166,7 @@ config.hyperparameters = {
 
 
 if __name__ == "__main__":
-    AGENTS = [HRL, DDQN] #] #DDQN, ,  ] #] ##  ] #, SAC_Discrete,  SAC_Discrete, DDQN] #HRL] #, SNN_HRL, DQN, h_DQN]
+    # ] #DDQN, ,  ] #] ##  ] #, SAC_Discrete,  SAC_Discrete, DDQN] #HRL] #, SNN_HRL, DQN, h_DQN]
+    AGENTS = [HRL, DDQN]
     trainer = Trainer(config, AGENTS)
     trainer.run_games_for_agents()
-
-
-

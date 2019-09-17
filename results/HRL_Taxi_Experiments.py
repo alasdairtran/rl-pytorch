@@ -17,9 +17,9 @@ sequitur_k = 2
 
 pre_training_learning_iterations_multipliers = [100, 500, 1000, 2000]
 episodes_to_run_with_no_explorations = [0, 5, 10, 20]
-epsilon_decay_rate_denominators = [30, 50, 100, 150, 200] #150
-min_num_episodes_to_plays = [5, 20, 50, 100] #80
-gradient_clipping_norms = [0.2, 0.5, 1.0]  #needs to be optimised
+epsilon_decay_rate_denominators = [30, 50, 100, 150, 200]  # 150
+min_num_episodes_to_plays = [5, 20, 50, 100]  # 80
+gradient_clipping_norms = [0.2, 0.5, 1.0]  # needs to be optimised
 linear_hidden_unitss = [[32, 32], [21, 21, 21], [16, 16, 16, 16]]
 
 num_top_results_to_uses = [2, 5, 10, 20]
@@ -99,9 +99,6 @@ for pre_training_learning_iterations_multiplier in pre_training_learning_iterati
                                                                                     "min_num_episodes_to_play": min_num_episodes_to_play,
                                                                                     "increase_batch_size_with_actions": increase_batch_size_with_actions
                                                                                 }}
-
-
-
 
 
 config.hyperparameters = {

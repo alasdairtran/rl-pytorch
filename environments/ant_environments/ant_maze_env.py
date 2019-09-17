@@ -4,9 +4,8 @@
 # and is not my code.
 
 
-
-from ant_environments.maze_env import MazeEnv
 from ant_environments.ant import AntEnv
+from ant_environments.maze_env import MazeEnv
 
 
 class AntMazeEnv(MazeEnv):

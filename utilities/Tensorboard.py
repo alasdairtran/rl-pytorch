@@ -2,11 +2,13 @@
 
 
 import io
+
 import numpy as np
-from PIL import Image
 import tensorflow as tf
+from PIL import Image
 
 # run tensorboard --logdir="logs/" on command line to get up the tensorboard afterwards
+
 
 class Tensorboard:
     def __init__(self, logdir):

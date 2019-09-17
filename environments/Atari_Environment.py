@@ -1,4 +1,5 @@
 from gym import Wrapper, spaces
+
 from .Open_AI_Wrappers import *
 
 
@@ -11,6 +12,7 @@ def make_atari_game(env_id, max_episode_steps=None):
         env = TimeLimit(env, max_episode_steps=max_episode_steps)
     env = wrap_deepmind(env)
     return env
+
 
 def wrap_deepmind(env, episode_life=True, clip_rewards=True, frame_stack=True, scale=True):
     """Configure environment for DeepMind-style Atari """

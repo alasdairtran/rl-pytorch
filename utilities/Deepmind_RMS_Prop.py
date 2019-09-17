@@ -14,11 +14,13 @@ class DM_RMSprop(Optimizer):
         if not 0.0 <= momentum:
             raise ValueError("Invalid momentum value: {}".format(momentum))
         if not 0.0 <= weight_decay:
-            raise ValueError("Invalid weight_decay value: {}".format(weight_decay))
+            raise ValueError(
+                "Invalid weight_decay value: {}".format(weight_decay))
         if not 0.0 <= alpha:
             raise ValueError("Invalid alpha value: {}".format(alpha))
 
-        defaults = dict(lr=lr, momentum=momentum, alpha=alpha, eps=eps, centered=centered, weight_decay=weight_decay)
+        defaults = dict(lr=lr, momentum=momentum, alpha=alpha,
+                        eps=eps, centered=centered, weight_decay=weight_decay)
         super(DM_RMSprop, self).__init__(params, defaults)
 
     def __setstate__(self, state):
@@ -47,7 +49,8 @@ class DM_RMSprop(Optimizer):
                     continue
                 grad = p.grad.data
                 if grad.is_sparse:
-                    raise RuntimeError('RMSprop does not support sparse gradients')
+                    raise RuntimeError(
+                        'RMSprop does not support sparse gradients')
                 state = self.state[p]
 
                 # State initialization
@@ -60,17 +63,16 @@ class DM_RMSprop(Optimizer):
                 mom_buffer = state['momentum_buffer']
                 square_avg = state['square_avg']
 
-
                 state['step'] += 1
 
                 mom_buffer.mul_(momentum)
                 mom_buffer.add_((1 - momentum) * grad)
 
-                square_avg.mul_(sq_momentum).addcmul_(1 - sq_momentum, grad, grad)
+                square_avg.mul_(sq_momentum).addcmul_(
+                    1 - sq_momentum, grad, grad)
 
-                avg = (square_avg -  mom_buffer**2 + epsilon).sqrt()
+                avg = (square_avg - mom_buffer**2 + epsilon).sqrt()
 
                 p.data.addcdiv_(-group['lr'], grad, avg)
 
         return loss
-

@@ -1,9 +1,8 @@
 import gym
 import pytest
 
-
-from utilities.Utility_Functions import flatten_action_id_to_actions
 from utilities.data_structures.Config import Config
+from utilities.Utility_Functions import flatten_action_id_to_actions
 
 config = Config()
 config.seed = 1
@@ -39,26 +38,26 @@ sequitur_k = 10
 config.hyperparameters = {
 
 
-        "linear_hidden_units": linear_hidden_units,
-        "learning_rate": learning_rate,
-        "buffer_size": buffer_size,
-        "batch_size": batch_size,
-        "final_layer_activation": "None",
-        "columns_of_data_to_be_embedded": [0],
-        "embedding_dimensions": [[config.environment.observation_space.n, embedding_dimensionality]],
-        "batch_norm": batch_norm,
-        "gradient_clipping_norm": gradient_clipping_norm,
-        "update_every_n_steps": update_every_n_steps,
-        "epsilon_decay_rate_denominator": epsilon_decay_rate_denominator,
-        "discount_rate": discount_rate,
-        "learning_iterations": learning_iterations,
-        "tau": tau,
-        "sequitur_k": sequitur_k,
-        "action_length_reward_bonus": 0.1,
-        "episodes_to_run_with_no_exploration": 10,
-        "pre_training_learning_iterations_multiplier": 0.1,
-        "copy_over_hidden_layers": True,
-        "use_global_list_of_best_performing_actions": True
+    "linear_hidden_units": linear_hidden_units,
+    "learning_rate": learning_rate,
+    "buffer_size": buffer_size,
+    "batch_size": batch_size,
+    "final_layer_activation": "None",
+    "columns_of_data_to_be_embedded": [0],
+    "embedding_dimensions": [[config.environment.observation_space.n, embedding_dimensionality]],
+    "batch_norm": batch_norm,
+    "gradient_clipping_norm": gradient_clipping_norm,
+    "update_every_n_steps": update_every_n_steps,
+    "epsilon_decay_rate_denominator": epsilon_decay_rate_denominator,
+    "discount_rate": discount_rate,
+    "learning_iterations": learning_iterations,
+    "tau": tau,
+    "sequitur_k": sequitur_k,
+    "action_length_reward_bonus": 0.1,
+    "episodes_to_run_with_no_exploration": 10,
+    "pre_training_learning_iterations_multiplier": 0.1,
+    "copy_over_hidden_layers": True,
+    "use_global_list_of_best_performing_actions": True
 }
 
 
@@ -89,4 +88,3 @@ config.hyperparameters = {
 #         original_number_of_primitive_actions = 3
 #         flattened_action_id_to_actions = flatten_action_id_to_actions(action_id_to_actions,
 #                                                                           original_number_of_primitive_actions)
-

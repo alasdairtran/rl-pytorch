@@ -1,9 +1,11 @@
 import random
 from collections import namedtuple
+
 import gym
 import numpy as np
 from gym import spaces
 from gym.utils import seeding
+
 
 class Long_Corridor_Environment(gym.Env):
     """Is the environment from pg.6 of the paper Hierarchical Deep Reinforcement Learning: Integrating Temporal
@@ -35,15 +37,17 @@ class Long_Corridor_Environment(gym.Env):
         if type(action) is np.ndarray:
             action = action[0]
         assert action in [0, 1], "Action must be a 0 or a 1"
-        if action == 0: self.move_left()
-        else: self.move_right()
+        if action == 0:
+            self.move_left()
+        else:
+            self.move_right()
         self.update_done_reward_and_visited_final_state()
         self.state = self.next_state
         self.s = np.array(self.next_state)
         return self.s, self.reward, self.done, {}
 
     def reset(self):
-        self.state = 1 #environment always starts in state 1
+        self.state = 1  # environment always starts in state 1
         self.next_state = None
         self.reward = None
         self.done = False
@@ -55,12 +59,16 @@ class Long_Corridor_Environment(gym.Env):
     def update_done_reward_and_visited_final_state(self):
         if self.next_state == 0:
             self.done = True
-            if self.visited_final_state: self.reward = self.reward_if_visited_final_state
-            else: self.reward = self.reward_if_havent_visited_final_state
+            if self.visited_final_state:
+                self.reward = self.reward_if_visited_final_state
+            else:
+                self.reward = self.reward_if_havent_visited_final_state
         else:
             self.reward = 0
-        if self.next_state == self.num_states - 1: self.visited_final_state = True
-        if self.episode_steps >= self.max_episode_steps: self.done = True
+        if self.next_state == self.num_states - 1:
+            self.visited_final_state = True
+        if self.episode_steps >= self.max_episode_steps:
+            self.done = True
 
     def move_left(self):
         """Moves left in environment"""
@@ -68,5 +76,7 @@ class Long_Corridor_Environment(gym.Env):
 
     def move_right(self):
         """Moves right in environment"""
-        if random.random() < self.stochasticity_of_action_right: self.next_state = self.state - 1
-        else: self.next_state = min(self.state + 1, self.num_states - 1)
+        if random.random() < self.stochasticity_of_action_right:
+            self.next_state = self.state - 1
+        else:
+            self.next_state = min(self.state + 1, self.num_states - 1)

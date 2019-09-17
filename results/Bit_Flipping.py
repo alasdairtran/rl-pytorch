@@ -1,16 +1,19 @@
 from gym.wrappers import FlattenDictWrapper
-from agents.DQN_agents.DQN_HER import DQN_HER
-from environments.Bit_Flipping_Environment import Bit_Flipping_Environment
-from agents.Trainer import Trainer
-from utilities.data_structures.Config import Config
+
 from agents.DQN_agents.DQN import DQN
+from agents.DQN_agents.DQN_HER import DQN_HER
+from agents.Trainer import Trainer
+from environments.Bit_Flipping_Environment import Bit_Flipping_Environment
+from utilities.data_structures.Config import Config
 
 config = Config()
 config.seed = 1
 config.environment = Bit_Flipping_Environment(14)
 config.num_episodes_to_run = 4500
-config.file_to_save_data_results = None #"Data_and_Graphs/Bit_Flipping_Results_Data.pkl"
-config.file_to_save_results_graph = None #"Data_and_Graphs/Bit_Flipping_Results_Graph.png"
+# "Data_and_Graphs/Bit_Flipping_Results_Data.pkl"
+config.file_to_save_data_results = None
+# "Data_and_Graphs/Bit_Flipping_Results_Graph.png"
+config.file_to_save_results_graph = None
 config.show_solution_score = False
 config.visualise_individual_results = False
 config.visualise_overall_agent_results = True
@@ -42,9 +45,7 @@ config.hyperparameters = {
     }
 }
 
-if __name__== '__main__':
+if __name__ == '__main__':
     AGENTS = [DQN_HER, DQN]
     trainer = Trainer(config, AGENTS)
     trainer.run_games_for_agents()
-
-

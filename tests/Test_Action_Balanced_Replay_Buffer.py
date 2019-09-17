@@ -3,7 +3,9 @@ from collections import Counter
 
 import pytest
 
-from utilities.data_structures.Action_Balanced_Replay_Buffer import Action_Balanced_Replay_Buffer
+from utilities.data_structures.Action_Balanced_Replay_Buffer import \
+    Action_Balanced_Replay_Buffer
+
 
 def test_add_experience():
     """Tests that add_experience works correctly"""
@@ -36,6 +38,7 @@ def test_add_experience():
     assert len(buffer.memories[0]) == 2
     assert buffer.memories[0][1].state == 99
 
+
 def test_add_experience_throws_error():
     """Tests that add_experience works correctly"""
     buffer = Action_Balanced_Replay_Buffer(20, 4, 0, 3)
@@ -48,6 +51,7 @@ def test_add_experience_throws_error():
 
     with pytest.raises(AssertionError):
         buffer.sample()
+
 
 def test_sample_correctly():
     """Tests that sample works correctly"""
@@ -69,10 +73,12 @@ def test_sample_correctly():
         buffer.add_experience(2, 0, 1, 0, 0)
         buffer.add_experience(1, 1, 1, 0, 0)
         states, actions, rewards, next_states, dones = buffer.sample()
-        if states[2] == 3.0: num_occurances += 1
+        if states[2] == 3.0:
+            num_occurances += 1
         print(states)
     assert num_occurances < tries/2
     assert num_occurances > tries/5
+
 
 def test_sample_statistics_correct():
     """Tests that sampled experiences correspond to expected statistics"""
@@ -81,7 +87,8 @@ def test_sample_statistics_correct():
         for num_actions in range(1, 7):
             for buffer_size in [random.randint(55, 9999) for _ in range(10)]:
                 for batch_size in [random.randint(8, 200) for _ in range(10)]:
-                    buffer = Action_Balanced_Replay_Buffer(buffer_size, batch_size, random.randint(0, 2000000), num_actions)
+                    buffer = Action_Balanced_Replay_Buffer(
+                        buffer_size, batch_size, random.randint(0, 2000000), num_actions)
                     for _ in range(500):
                         random_action = random.randint(0, num_actions - 1)
                         buffer.add_experience(1, random_action, 1, 0, 0)
@@ -91,8 +98,5 @@ def test_sample_statistics_correct():
                     count = Counter(actions)
                     action_count = count[0]
                     for action in range(num_actions):
-                        assert abs(count[action] - action_count) < 2, print(count[action])
-
-
-
-
+                        assert abs(count[action] -
+                                   action_count) < 2, print(count[action])

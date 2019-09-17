@@ -1,5 +1,7 @@
-from .ant_environments.create_maze_env import create_maze_env
 import numpy as np
+
+from .ant_environments.create_maze_env import create_maze_env
+
 
 """Environments taken from HIRO paper github repo: https://github.com/tensorflow/models/tree/master/research/efficient-hrl
 There are three environments that can be represented by this class depending on what environment_name you provide. 
@@ -8,6 +10,8 @@ The options are: ["AntMaze", "AntPush", "AntFall"].
 Note that "Success" for this game is defined by the authors as achieving -5 or more on the last step of the episode 
 but that this isn't coded in anyway as part of the environment. 
 """
+
+
 class Ant_Navigation_Environments(object):
 
     def __init__(self, environment_name):
@@ -39,7 +43,7 @@ class Ant_Navigation_Environments(object):
         """Produces the function required to generate a goal for each environment"""
         if self.environment_name == "AntMaze":
             return lambda: np.array([0., 16.])
-            #Can also use np.random.uniform((-4, -4), (20, 20)) for training purposes
+            # Can also use np.random.uniform((-4, -4), (20, 20)) for training purposes
         elif self.environment_name == "AntPush":
             return lambda: np.array([0., 19.])
         elif self.environment_name == "AntFall":
@@ -57,7 +61,3 @@ class Ant_Navigation_Environments(object):
             return lambda obs, goal: -np.sum(np.square(obs[:3] - goal)) ** 0.5
         else:
             raise ValueError("Unknown environment name")
-
-
-
-

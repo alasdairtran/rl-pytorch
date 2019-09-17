@@ -1,8 +1,11 @@
 import numpy as np
+
 from utilities.data_structures.Node import Node
+
 
 class Max_Heap(object):
     """Generic max heap object"""
+
     def __init__(self, max_size, dimension_of_value_attribute, default_key_to_use):
 
         self.max_size = max_size
@@ -12,7 +15,8 @@ class Max_Heap(object):
 
     def initialise_heap(self):
         """Initialises a heap of Nodes of length self.max_size * 4 + 1"""
-        heap = np.array([Node(self.default_key_to_use, tuple([None for _ in range(self.dimension_of_value_attribute)])) for _ in range(self.max_size * 4 + 1)])
+        heap = np.array([Node(self.default_key_to_use, tuple([None for _ in range(
+            self.dimension_of_value_attribute)])) for _ in range(self.max_size * 4 + 1)])
 
         # We don't use the 0th element in a heap so we want it to have infinite value so it is never swapped with a lower node
         heap[0] = Node(float("inf"), (None, None, None, None, None))
@@ -37,9 +41,11 @@ class Max_Heap(object):
             self.reorganise_heap(parent_index)
 
         else:
-            biggest_child_index = self.calculate_index_of_biggest_child(heap_index_changed)
+            biggest_child_index = self.calculate_index_of_biggest_child(
+                heap_index_changed)
             if node_key < self.heap[biggest_child_index].key:
-                self.swap_heap_elements(heap_index_changed, biggest_child_index)
+                self.swap_heap_elements(
+                    heap_index_changed, biggest_child_index)
                 self.reorganise_heap(biggest_child_index)
 
     def swap_heap_elements(self, index1, index2):

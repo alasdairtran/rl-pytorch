@@ -1,12 +1,11 @@
 import gym
 
-from agents.policy_gradient_agents.PPO import PPO
 from agents.actor_critic_agents.DDPG import DDPG
 from agents.actor_critic_agents.SAC import SAC
 from agents.actor_critic_agents.TD3 import TD3
+from agents.policy_gradient_agents.PPO import PPO
 from agents.Trainer import Trainer
 from utilities.data_structures.Config import Config
-
 
 config = Config()
 config.seed = 1
@@ -27,46 +26,46 @@ config.save_model = False
 
 config.hyperparameters = {
     "Policy_Gradient_Agents": {
-            "learning_rate": 0.05,
-            "linear_hidden_units": [30, 15],
-            "final_layer_activation": "TANH",
-            "learning_iterations_per_round": 10,
-            "discount_rate": 0.9,
-            "batch_norm": False,
-            "clip_epsilon": 0.2,
-            "episodes_per_learning_round": 10,
-            "normalise_rewards": True,
-            "gradient_clipping_norm": 5,
-            "mu": 0.0,
-            "theta": 0.15,
-            "sigma": 0.2,
-            "epsilon_decay_rate_denominator": 1,
-            "clip_rewards": False
-        },
+        "learning_rate": 0.05,
+        "linear_hidden_units": [30, 15],
+        "final_layer_activation": "TANH",
+        "learning_iterations_per_round": 10,
+        "discount_rate": 0.9,
+        "batch_norm": False,
+        "clip_epsilon": 0.2,
+        "episodes_per_learning_round": 10,
+        "normalise_rewards": True,
+        "gradient_clipping_norm": 5,
+        "mu": 0.0,
+        "theta": 0.15,
+        "sigma": 0.2,
+        "epsilon_decay_rate_denominator": 1,
+        "clip_rewards": False
+    },
 
     "Actor_Critic_Agents": {
-            "Actor": {
-                "learning_rate": 0.003,
-                "linear_hidden_units": [20, 20],
-                "final_layer_activation": None,
-                "batch_norm": False,
-                "tau": 0.005,
-                "gradient_clipping_norm": 5,
-                "initialiser": "Xavier"
-            },
+        "Actor": {
+            "learning_rate": 0.003,
+            "linear_hidden_units": [20, 20],
+            "final_layer_activation": None,
+            "batch_norm": False,
+            "tau": 0.005,
+            "gradient_clipping_norm": 5,
+            "initialiser": "Xavier"
+        },
 
-            "Critic": {
-                "learning_rate": 0.02,
-                "linear_hidden_units": [20, 20],
-                "final_layer_activation": None,
-                "batch_norm": False,
-                "buffer_size": 1000000,
-                "tau": 0.005,
-                "gradient_clipping_norm": 5,
-                "initialiser": "Xavier"
-            },
+        "Critic": {
+            "learning_rate": 0.02,
+            "linear_hidden_units": [20, 20],
+            "final_layer_activation": None,
+            "batch_norm": False,
+            "buffer_size": 1000000,
+            "tau": 0.005,
+            "gradient_clipping_norm": 5,
+            "initialiser": "Xavier"
+        },
 
-        "min_steps_before_learning": 1000, #for SAC only
+        "min_steps_before_learning": 1000,  # for SAC only
         "batch_size": 256,
         "discount_rate": 0.99,
         "mu": 0.0,  # for O-H noise
@@ -92,7 +91,3 @@ if __name__ == "__main__":
     trainer.run_games_for_agents()
 
 # SAC, ,
-
-
-
-

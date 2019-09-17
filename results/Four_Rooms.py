@@ -1,6 +1,6 @@
 from agents.DQN_agents.DDQN import DDQN
-from environments.Four_Rooms_Environment import Four_Rooms_Environment
 from agents.Trainer import Trainer
+from environments.Four_Rooms_Environment import Four_Rooms_Environment
 from utilities.data_structures.Config import Config
 
 config = Config()
@@ -13,7 +13,8 @@ num_possible_states = (height * width) ** (1 + 1*random_goal_place)
 embedding_dimensions = [[num_possible_states, 20]]
 print("Num possible states ", num_possible_states)
 
-config.environment = Four_Rooms_Environment(height, width, stochastic_actions_probability=0.0, random_start_user_place=True, random_goal_place=random_goal_place)
+config.environment = Four_Rooms_Environment(
+    height, width, stochastic_actions_probability=0.0, random_start_user_place=True, random_goal_place=random_goal_place)
 
 config.num_episodes_to_run = 1000
 config.file_to_save_data_results = "Data_and_Graphs/Four_Rooms.pkl"
@@ -151,11 +152,8 @@ config.hyperparameters = {
 
 }
 
-if __name__== '__main__':
+if __name__ == '__main__':
 
-
-    AGENTS = [DDQN] #DIAYN] # A3C] #SNN_HRL] #, DDQN]
+    AGENTS = [DDQN]  # DIAYN] # A3C] #SNN_HRL] #, DDQN]
     trainer = Trainer(config, AGENTS)
     trainer.run_games_for_agents()
-
-

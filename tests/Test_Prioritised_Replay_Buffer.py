@@ -1,13 +1,16 @@
-from utilities.data_structures.Prioritised_Replay_Buffer import Prioritised_Replay_Buffer
-import numpy as np
 import random
 
+import numpy as np
+
+from utilities.data_structures.Prioritised_Replay_Buffer import \
+    Prioritised_Replay_Buffer
+
 hyperparameters = {
-        "alpha_prioritised_replay": 0.5,
-        "beta_prioritised_replay": 0.5,
-        "incremental_td_error": 0.0,
-        "buffer_size": 4,
-        "batch_size": 3
+    "alpha_prioritised_replay": 0.5,
+    "beta_prioritised_replay": 0.5,
+    "incremental_td_error": 0.0,
+    "buffer_size": 4,
+    "batch_size": 3
 }
 
 
@@ -71,8 +74,11 @@ def test_heap_always_keeps_max_element_at_top():
             elements_added.append(element)
             buffer.add_experience(element, 0, 0, 0, 0, 0)
 
-        max_key = np.max(elements_added)** hyperparameters["alpha_prioritised_replay"]
-        assert round(buffer.give_max_td_error(), 8) == round(max_key, 8), "{}".format(elements_added)
+        max_key = np.max(
+            elements_added) ** hyperparameters["alpha_prioritised_replay"]
+        assert round(buffer.give_max_td_error(), 8) == round(
+            max_key, 8), "{}".format(elements_added)
+
 
 def test_give_sum_of_elements_is_always_correct():
     hyperparameters["buffer_size"] = 200
@@ -81,8 +87,10 @@ def test_give_sum_of_elements_is_always_correct():
         elements_added = []
         for ix in range(1, 100):
             element = random.random()
-            elements_added.append((abs(element) + hyperparameters["incremental_td_error"]) ** hyperparameters["alpha_prioritised_replay"])
+            elements_added.append(
+                (abs(element) + hyperparameters["incremental_td_error"]) ** hyperparameters["alpha_prioritised_replay"])
             buffer.add_experience(element, 0, 0, 0, 0, 0)
 
             sum_key = np.sum(elements_added)
-        assert round(buffer.give_adapted_sum_of_td_errors(), 8) == round(sum_key, 8), "{}".format(elements_added)
+        assert round(buffer.give_adapted_sum_of_td_errors(), 8) == round(
+            sum_key, 8), "{}".format(elements_added)

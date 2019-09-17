@@ -1,26 +1,27 @@
 import random
 
 import gym
+import numpy as np
+import torch
 
 from agents.actor_critic_agents.A2C import A2C
 from agents.actor_critic_agents.A3C import A3C
-from agents.actor_critic_agents.SAC import SAC
-from agents.DQN_agents.DQN_HER import DQN_HER
-from agents.DQN_agents.DDQN import DDQN
-from agents.DQN_agents.DDQN_With_Prioritised_Experience_Replay import DDQN_With_Prioritised_Experience_Replay
-from agents.DQN_agents.DQN_With_Fixed_Q_Targets import DQN_With_Fixed_Q_Targets
 from agents.actor_critic_agents.DDPG import DDPG
 from agents.actor_critic_agents.DDPG_HER import DDPG_HER
-from environments.Bit_Flipping_Environment import Bit_Flipping_Environment
-from agents.policy_gradient_agents.PPO import PPO
-from environments.Four_Rooms_Environment import Four_Rooms_Environment
-from agents.hierarchical_agents.SNN_HRL import SNN_HRL
+from agents.actor_critic_agents.SAC import SAC
 from agents.actor_critic_agents.TD3 import TD3
-from agents.Trainer import Trainer
-from utilities.data_structures.Config import Config
+from agents.DQN_agents.DDQN import DDQN
+from agents.DQN_agents.DDQN_With_Prioritised_Experience_Replay import \
+    DDQN_With_Prioritised_Experience_Replay
 from agents.DQN_agents.DQN import DQN
-import numpy as np
-import torch
+from agents.DQN_agents.DQN_HER import DQN_HER
+from agents.DQN_agents.DQN_With_Fixed_Q_Targets import DQN_With_Fixed_Q_Targets
+from agents.hierarchical_agents.SNN_HRL import SNN_HRL
+from agents.policy_gradient_agents.PPO import PPO
+from agents.Trainer import Trainer
+from environments.Bit_Flipping_Environment import Bit_Flipping_Environment
+from environments.Four_Rooms_Environment import Four_Rooms_Environment
+from utilities.data_structures.Config import Config
 
 random.seed(1)
 np.random.seed(1)
@@ -81,9 +82,9 @@ config.hyperparameters = {
         "episodes_per_learning_round": 7,
         "normalise_rewards": False,
         "gradient_clipping_norm": 5,
-        "mu": 0.0, #only required for continuous action games
-        "theta": 0.0, #only required for continuous action games
-        "sigma": 0.0, #only required for continuous action games
+        "mu": 0.0,  # only required for continuous action games
+        "theta": 0.0,  # only required for continuous action games
+        "sigma": 0.0,  # only required for continuous action games
         "epsilon_decay_rate_denominator": 1,
         "clip_rewards": False
     },
@@ -134,7 +135,7 @@ config.hyperparameters = {
         "exploration_worker_difference": 1.0
     },
 
-"SNN_HRL": {
+    "SNN_HRL": {
         "SKILL_AGENT": {
             "num_skills": 20,
             "regularisation_weight": 1.5,
@@ -180,19 +181,24 @@ config.hyperparameters = {
     }
 }
 
+
 def test_agent_solve_bit_flipping_game():
-    AGENTS = [PPO, DDQN, DQN_With_Fixed_Q_Targets, DDQN_With_Prioritised_Experience_Replay, DQN, DQN_HER]
+    AGENTS = [PPO, DDQN, DQN_With_Fixed_Q_Targets,
+              DDQN_With_Prioritised_Experience_Replay, DQN, DQN_HER]
     trainer = Trainer(config, AGENTS)
     results = trainer.run_games_for_agents()
     for agent in AGENTS:
         agent_results = results[agent.agent_name]
         agent_results = np.max(agent_results[0][1][50:])
-        assert agent_results >= 0.0, "Failed for {} -- score {}".format(agent.agent_name, agent_results)
+        assert agent_results >= 0.0, "Failed for {} -- score {}".format(
+            agent.agent_name, agent_results)
+
 
 def test_agents_can_play_games_of_different_dimensions():
     config.num_episodes_to_run = 10
     config.hyperparameters["DQN_Agents"]["batch_size"] = 3
-    AGENTS = [A2C, A3C, PPO, DDQN, DQN_With_Fixed_Q_Targets, DDQN_With_Prioritised_Experience_Replay, DQN]
+    AGENTS = [A2C, A3C, PPO, DDQN, DQN_With_Fixed_Q_Targets,
+              DDQN_With_Prioritised_Experience_Replay, DQN]
     trainer = Trainer(config, AGENTS)
     config.environment = gym.make("CartPole-v0")
     results = trainer.run_games_for_agents()

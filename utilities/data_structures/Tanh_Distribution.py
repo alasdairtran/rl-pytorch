@@ -3,10 +3,6 @@
 # Taken from here: https://github.com/vitchyr/rlkit/blob/master/rlkit/torch/distributions.py
 
 
-
-
-
-
 import torch
 from torch.distributions import Distribution, Normal
 
@@ -18,6 +14,7 @@ class TanhNormal(Distribution):
         Z ~ N(mean, std)
     Note: this is not very numerically stable.
     """
+
     def __init__(self, normal_mean, normal_std, epsilon=1e-6):
         """
         :param normal_mean: Mean of the normal distribution

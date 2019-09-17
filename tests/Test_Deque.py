@@ -7,6 +7,7 @@ def test_Deque_initialisation():
     deque = Deque(2, 1)
     assert all(deque.deque == [Node(0, (None,)), Node(0, (None,))])
 
+
 def test_Deque_adding_elements():
 
     deque = Deque(2, 1)

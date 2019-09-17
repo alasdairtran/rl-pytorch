@@ -1,12 +1,14 @@
 import copy
 import random
 import time
+
 import numpy as np
 import torch
 from gym import Wrapper, spaces
+
 from agents.Base_Agent import Base_Agent
-from agents.policy_gradient_agents.PPO import PPO
 from agents.DQN_agents.DDQN import DDQN
+from agents.policy_gradient_agents.PPO import PPO
 
 
 class SNN_HRL(Base_Agent):
@@ -25,18 +27,23 @@ class SNN_HRL(Base_Agent):
 
     def __init__(self, config):
         Base_Agent.__init__(self, config)
-        assert isinstance(self.environment.reset(), int) or isinstance(self.environment.reset(), np.int64) or  self.environment.reset().dtype == np.int64, "only works for discrete states currently"
+        assert isinstance(self.environment.reset(), int) or isinstance(self.environment.reset(
+        ), np.int64) or self.environment.reset().dtype == np.int64, "only works for discrete states currently"
         self.num_skills = self.hyperparameters["SKILL_AGENT"]["num_skills"]
-        self.episodes_for_pretraining =  self.hyperparameters["SKILL_AGENT"]["episodes_for_pretraining"]
-        self.timesteps_before_changing_skill = self.hyperparameters["MANAGER"]["timesteps_before_changing_skill"]
+        self.episodes_for_pretraining = self.hyperparameters[
+            "SKILL_AGENT"]["episodes_for_pretraining"]
+        self.timesteps_before_changing_skill = self.hyperparameters[
+            "MANAGER"]["timesteps_before_changing_skill"]
 
         self.skill_agent_config = copy.deepcopy(config)
-        self.skill_agent_config.hyperparameters = self.skill_agent_config.hyperparameters["SKILL_AGENT"]
+        self.skill_agent_config.hyperparameters = self.skill_agent_config.hyperparameters[
+            "SKILL_AGENT"]
         self.skill_agent_config.num_episodes_to_run = self.episodes_for_pretraining
 
         self.manager_config = copy.deepcopy(config)
         self.manager_config.hyperparameters = self.manager_config.hyperparameters["MANAGER"]
-        self.manager_config.num_episodes_to_run = self.config.num_episodes_to_run - self.skill_agent_config.num_episodes_to_run
+        self.manager_config.num_episodes_to_run = self.config.num_episodes_to_run - \
+            self.skill_agent_config.num_episodes_to_run
 
     def run_n_episodes(self):
         """Runs game to completion n times and then summarises results and saves model (if asked to)"""
@@ -51,7 +58,8 @@ class SNN_HRL(Base_Agent):
         manager_agent.run_n_episodes()
 
         time_taken = time.time() - start
-        pretraining_results = [np.min(manager_agent.game_full_episode_scores)]*self.episodes_for_pretraining
+        pretraining_results = [
+            np.min(manager_agent.game_full_episode_scores)]*self.episodes_for_pretraining
         return pretraining_results + manager_agent.game_full_episode_scores, pretraining_results + manager_agent.rolling_results, time_taken
 
     def create_skill_training_agent(self):
@@ -66,17 +74,19 @@ class SNN_HRL(Base_Agent):
     def create_manager_agent(self, skill_agent):
         """Instantiates a manager agent"""
         self.manager_config.environment = Manager_Frozen_Worker_Wrapper(copy.deepcopy(self.environment), self.num_skills,
-                                                                             self.timesteps_before_changing_skill, skill_agent)
+                                                                        self.timesteps_before_changing_skill, skill_agent)
         return DDQN(self.manager_config)
 
 
 class Skill_Wrapper(Wrapper):
     """Open AI gym wrapper to help create a pretraining environment in which to train skills"""
+
     def __init__(self, env, num_states, num_skills, regularisation_weight, visitations_decay):
         Wrapper.__init__(self, env)
         self.num_skills = num_skills
         self.num_states = num_states
-        self.state_visitations = [[0 for _ in range(num_states)] for _ in range(num_skills)]
+        self.state_visitations = [
+            [0 for _ in range(num_states)] for _ in range(num_skills)]
         self.regularisation_weight = regularisation_weight
         self.visitations_decay = visitations_decay
 
@@ -95,8 +105,10 @@ class Skill_Wrapper(Wrapper):
 
     def calculate_new_reward(self, reward, next_state):
         self.update_state_visitations(next_state)
-        probability_correct_skill = self.calculate_probability_correct_skill(next_state)
-        new_reward = reward + self.regularisation_weight * np.log(probability_correct_skill)
+        probability_correct_skill = self.calculate_probability_correct_skill(
+            next_state)
+        new_reward = reward + self.regularisation_weight * \
+            np.log(probability_correct_skill)
         return new_reward
 
     def update_state_visitations(self, next_state):
@@ -108,8 +120,10 @@ class Skill_Wrapper(Wrapper):
     def calculate_probability_correct_skill(self, next_state):
         """Calculates the probability that being in a state implies a certain skill"""
         visitations_correct_skill = self.state_visitations[self.skill][next_state[0]]
-        visitations_any_skill = np.sum([visit[next_state[0]] for visit in self.state_visitations])
-        probability = float(visitations_correct_skill) / float(visitations_any_skill)
+        visitations_any_skill = np.sum(
+            [visit[next_state[0]] for visit in self.state_visitations])
+        probability = float(visitations_correct_skill) / \
+            float(visitations_any_skill)
         return probability
 
     def print_state_distribution(self):
@@ -125,8 +139,10 @@ class Skill_Wrapper(Wrapper):
         print(probability_visitations)
         print(" ")
 
+
 class Manager_Frozen_Worker_Wrapper(Wrapper):
     """Open AI gym wrapper to help create an environment where manager learns to act by instructing a frozen worker"""
+
     def __init__(self, env, num_skills, timesteps_before_changing_skill, skills_agent):
         Wrapper.__init__(self, env)
         self.action_space = spaces.Discrete(num_skills)
@@ -139,8 +155,10 @@ class Manager_Frozen_Worker_Wrapper(Wrapper):
         cumulative_reward = 0
         for _ in range(self.timesteps_before_changing_skill):
             with torch.no_grad():
-                skill_action = self.skills_agent.pick_action(np.array([next_state[0], action]))
+                skill_action = self.skills_agent.pick_action(
+                    np.array([next_state[0], action]))
             next_state, reward, done, _ = self.env.step(skill_action)
             cumulative_reward += reward
-            if done: break
+            if done:
+                break
         return next_state, cumulative_reward, done, _

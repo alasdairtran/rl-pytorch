@@ -1,21 +1,24 @@
 import os
 import sys
-from os.path import dirname, abspath
-sys.path.append(dirname(dirname(abspath(__file__))))
+from os.path import abspath, dirname
 
 import gym
 
 from agents.actor_critic_agents.A2C import A2C
-from agents.DQN_agents.Dueling_DDQN import Dueling_DDQN
-from agents.actor_critic_agents.SAC_Discrete import SAC_Discrete
 from agents.actor_critic_agents.A3C import A3C
+from agents.actor_critic_agents.SAC_Discrete import SAC_Discrete
+from agents.DQN_agents.DDQN import DDQN
+from agents.DQN_agents.DDQN_With_Prioritised_Experience_Replay import \
+    DDQN_With_Prioritised_Experience_Replay
+from agents.DQN_agents.DQN import DQN
+from agents.DQN_agents.DQN_With_Fixed_Q_Targets import DQN_With_Fixed_Q_Targets
+from agents.DQN_agents.Dueling_DDQN import Dueling_DDQN
 from agents.policy_gradient_agents.PPO import PPO
 from agents.Trainer import Trainer
 from utilities.data_structures.Config import Config
-from agents.DQN_agents.DDQN import DDQN
-from agents.DQN_agents.DDQN_With_Prioritised_Experience_Replay import DDQN_With_Prioritised_Experience_Replay
-from agents.DQN_agents.DQN import DQN
-from agents.DQN_agents.DQN_With_Fixed_Q_Targets import DQN_With_Fixed_Q_Targets
+
+sys.path.append(dirname(dirname(abspath(__file__))))
+
 
 config = Config()
 config.seed = 1
@@ -77,9 +80,9 @@ config.hyperparameters = {
         "episodes_per_learning_round": 4,
         "normalise_rewards": True,
         "gradient_clipping_norm": 7.0,
-        "mu": 0.0, #only required for continuous action games
-        "theta": 0.0, #only required for continuous action games
-        "sigma": 0.0, #only required for continuous action games
+        "mu": 0.0,  # only required for continuous action games
+        "theta": 0.0,  # only required for continuous action games
+        "sigma": 0.0,  # only required for continuous action games
         "epsilon_decay_rate_denominator": 1.0,
         "clip_rewards": False
     },
@@ -120,9 +123,9 @@ config.hyperparameters = {
         "min_steps_before_learning": 400,
         "batch_size": 256,
         "discount_rate": 0.99,
-        "mu": 0.0, #for O-H noise
-        "theta": 0.15, #for O-H noise
-        "sigma": 0.25, #for O-H noise
+        "mu": 0.0,  # for O-H noise
+        "theta": 0.15,  # for O-H noise
+        "sigma": 0.25,  # for O-H noise
         "action_noise_std": 0.2,  # for TD3
         "action_noise_clipping_range": 0.5,  # for TD3
         "update_every_n_steps": 1,
@@ -136,12 +139,6 @@ config.hyperparameters = {
 
 if __name__ == "__main__":
     AGENTS = [SAC_Discrete, DDQN, Dueling_DDQN, DQN, DQN_With_Fixed_Q_Targets,
-              DDQN_With_Prioritised_Experience_Replay, A2C, PPO, A3C ]
+              DDQN_With_Prioritised_Experience_Replay, A2C, PPO, A3C]
     trainer = Trainer(config, AGENTS)
     trainer.run_games_for_agents()
-
-
-
-
-
-

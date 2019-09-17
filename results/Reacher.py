@@ -1,11 +1,14 @@
 import gym
-from agents.Trainer import Trainer
+
 from agents.actor_critic_agents.DDPG import DDPG
 from agents.hierarchical_agents.HIRO import HIRO
+from agents.Trainer import Trainer
 from utilities.data_structures.Config import Config
+
 config = Config()
 config.seed = 1
-config.environment = gym.make("Reacher-v2") #  Reacher-v2 "InvertedPendulum-v2") #Pendulum-v0
+# Reacher-v2 "InvertedPendulum-v2") #Pendulum-v0
+config.environment = gym.make("Reacher-v2")
 config.num_episodes_to_run = 1500
 config.file_to_save_data_results = None
 config.file_to_save_results_graph = None
@@ -18,8 +21,6 @@ config.use_GPU = False
 config.overwrite_existing_results_file = False
 config.randomise_random_seed = True
 config.save_model = False
-
-
 
 
 config.hyperparameters = {
@@ -58,13 +59,13 @@ config.hyperparameters = {
             "learning_updates_per_learning_session": 10,
             "clip_rewards": False
 
-            } ,
+        },
 
 
 
         "HIGHER_LEVEL": {
 
-                "Actor": {
+            "Actor": {
                 "learning_rate": 0.001,
                 "linear_hidden_units": [20, 20],
                 "final_layer_activation": "TANH",
@@ -94,10 +95,10 @@ config.hyperparameters = {
             "learning_updates_per_learning_session": 10,
             "clip_rewards": False
 
-            } ,
-
-
         },
+
+
+    },
     "Actor_Critic_Agents": {  # hyperparameters taken from https://arxiv.org/pdf/1802.09477.pdf
         "Actor": {
             "learning_rate": 0.001,
@@ -132,16 +133,10 @@ config.hyperparameters = {
     }
 
 
-    }
+}
 
 
 if __name__ == "__main__":
     AGENTS = [DDPG, HIRO]
     trainer = Trainer(config, AGENTS)
     trainer.run_games_for_agents()
-
-
-
-
-
-

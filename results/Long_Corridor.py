@@ -1,14 +1,15 @@
-from agents.hierarchical_agents.SNN_HRL import SNN_HRL
-from agents.Trainer import Trainer
-from utilities.data_structures.Config import Config
 from agents.DQN_agents.DQN import DQN
 from agents.hierarchical_agents.h_DQN import h_DQN
+from agents.hierarchical_agents.SNN_HRL import SNN_HRL
+from agents.Trainer import Trainer
 from environments.Long_Corridor_Environment import Long_Corridor_Environment
+from utilities.data_structures.Config import Config
 
 config = Config()
 config.seed = 1
 config.env_parameters = {"stochasticity_of_action_right": 0.5}
-config.environment = Long_Corridor_Environment(stochasticity_of_action_right=config.env_parameters["stochasticity_of_action_right"])
+config.environment = Long_Corridor_Environment(
+    stochasticity_of_action_right=config.env_parameters["stochasticity_of_action_right"])
 config.num_episodes_to_run = 10000
 config.file_to_save_data_results = "Data_and_Graphs/Long_Corridor_Results_Data.pkl"
 config.file_to_save_results_graph = "Data_and_Graphs/Long_Corridor_Results_Graph.png"
@@ -101,7 +102,7 @@ config.hyperparameters = {
 
 
 
-    },
+        },
 
         "MANAGER": {
             "timesteps_before_changing_skill": 4,
@@ -126,13 +127,10 @@ config.hyperparameters = {
 
 }
 
-config.hyperparameters["DQN_Agents"] =  config.hyperparameters["h_DQN"]["META_CONTROLLER"]
+config.hyperparameters["DQN_Agents"] = config.hyperparameters["h_DQN"]["META_CONTROLLER"]
 
 
 if __name__ == "__main__":
     AGENTS = [SNN_HRL, DQN, h_DQN]
     trainer = Trainer(config, AGENTS)
     trainer.run_games_for_agents()
-
-
-

@@ -13,7 +13,7 @@
 # TODO fix the fact that it sometimes provides rules that have end of episode symbol in them
 # TODO add an option to return rules in terms of the amount of times they appear in a set of provided episodes
 
-from collections import defaultdict, Counter
+from collections import Counter, defaultdict
 
 
 class k_Sequitur(object):
@@ -26,11 +26,14 @@ class k_Sequitur(object):
     def generate_action_grammar(self, actions):
         """Generates a grammar given a list of actions"""
         assert isinstance(actions, list), actions
-        assert not isinstance(actions[0], list), "Should be 1 long list of actions - {}".format(actions[0])
+        assert not isinstance(
+            actions[0], list), "Should be 1 long list of actions - {}".format(actions[0])
         assert len(actions) > 0, "Need to provide a list of at least 1 action"
         assert isinstance(actions[0], int), "The actions should be integers"
-        new_actions, all_rules, rule_usage, rules_episode_appearance_count = self.discover_all_rules_and_new_actions_representation(actions)
-        action_usage = self.extract_action_usage_from_rule_usage(rule_usage, all_rules)
+        new_actions, all_rules, rule_usage, rules_episode_appearance_count = self.discover_all_rules_and_new_actions_representation(
+            actions)
+        action_usage = self.extract_action_usage_from_rule_usage(
+            rule_usage, all_rules)
         rules_episode_appearance_count = self.extract_action_usage_from_rule_usage(rules_episode_appearance_count,
                                                                                    all_rules)
         return new_actions, all_rules, action_usage, rules_episode_appearance_count
@@ -43,11 +46,13 @@ class k_Sequitur(object):
         new_actions = actions
         rule_usage = defaultdict(int)
         num_episodes = Counter(actions)[self.end_of_episode_symbol]
-        rules_episode_appearance_tracker = {k: defaultdict(int) for k in range(num_episodes)}
+        rules_episode_appearance_tracker = {
+            k: defaultdict(int) for k in range(num_episodes)}
 
         while new_actions != current_actions:
             current_actions = new_actions
-            rules, reverse_rules = self.generate_1_layer_of_rules(current_actions)
+            rules, reverse_rules = self.generate_1_layer_of_rules(
+                current_actions)
             all_rules.update(rules)
             new_actions, rules_usage_count = self.convert_a_string_using_reverse_rules(current_actions, reverse_rules,
                                                                                        rules_episode_appearance_tracker)
@@ -71,7 +76,8 @@ class k_Sequitur(object):
         skip_next_symbol = False
         rules = {}
 
-        assert string[-1] == self.end_of_episode_symbol, "Final element of string must be self.end_of_episode_symbol {}".format(string)
+        assert string[-1] == self.end_of_episode_symbol, "Final element of string must be self.end_of_episode_symbol {}".format(
+            string)
 
         for ix in range(len(string) - 1):
             # We skip the next symbol if it is already being used in a rule we just made
@@ -85,7 +91,8 @@ class k_Sequitur(object):
             if pair != last_pair:
                 pairs_of_symbols[pair] += 1
                 last_pair = pair
-            else: last_pair = None
+            else:
+                last_pair = None
             if pairs_of_symbols[pair] >= self.k:
                 previous_pair = (string[ix-1], string[ix])
                 pairs_of_symbols[previous_pair] -= 1
@@ -116,8 +123,10 @@ class k_Sequitur(object):
                     new_symbol.append(rules[symbol_val][1])
                 else:
                     new_symbol.append(symbol_val)
-            if new_symbol == symbol: finished = True
-            else: symbol = new_symbol
+            if new_symbol == symbol:
+                finished = True
+            else:
+                symbol = new_symbol
         new_symbol = tuple(new_symbol)
         return new_symbol
 
@@ -125,7 +134,8 @@ class k_Sequitur(object):
         """Extracts the usage of each action (of 2 or more primitive actions) out from the usage of each rule"""
         action_usage = {}
         for key in rule_usage.keys():
-            action_usage[self.convert_symbol_to_raw_actions(key, all_rules)] = rule_usage[key]
+            action_usage[self.convert_symbol_to_raw_actions(
+                key, all_rules)] = rule_usage[key]
         return action_usage
 
     def convert_a_string_using_reverse_rules(self, string, reverse_rules, rules_episode_appearance_tracker):
@@ -163,4 +173,3 @@ class k_Sequitur(object):
             else:
                 new_string.append(string[ix])
         return new_string, rules_usage_count
-

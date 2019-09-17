@@ -1,7 +1,10 @@
 import copy
+
 import numpy as np
+
 from agents.Base_Agent import Base_Agent
 from agents.DQN_agents.DDQN import DDQN
+
 
 class h_DQN(Base_Agent):
     """Implements hierarchical RL agent h-DQN from paper Kulkarni et al. (2016) https://arxiv.org/abs/1604.06057?context=stat
@@ -12,12 +15,14 @@ class h_DQN(Base_Agent):
     def __init__(self, config):
         Base_Agent.__init__(self, config)
         self.controller_config = copy.deepcopy(config)
-        self.controller_config.hyperparameters = self.controller_config.hyperparameters["CONTROLLER"]
+        self.controller_config.hyperparameters = self.controller_config.hyperparameters[
+            "CONTROLLER"]
         self.controller = DDQN(self.controller_config)
         self.controller.q_network_local = self.create_NN(input_dim=self.state_size*2, output_dim=self.action_size,
                                                          key_to_use="CONTROLLER")
         self.meta_controller_config = copy.deepcopy(config)
-        self.meta_controller_config.hyperparameters = self.meta_controller_config.hyperparameters["META_CONTROLLER"]
+        self.meta_controller_config.hyperparameters = self.meta_controller_config.hyperparameters[
+            "META_CONTROLLER"]
         self.meta_controller = DDQN(self.meta_controller_config)
         self.meta_controller.q_network_local = self.create_NN(input_dim=self.state_size, output_dim=config.environment.observation_space.n,
                                                               key_to_use="META_CONTROLLER")
@@ -38,8 +43,10 @@ class h_DQN(Base_Agent):
         self.subgoal_achieved = False
         self.total_episode_score_so_far = 0
         self.meta_controller_steps = 0
-        self.update_learning_rate(self.controller_config.hyperparameters["learning_rate"], self.controller.q_network_optimizer)
-        self.update_learning_rate(self.meta_controller_config.hyperparameters["learning_rate"], self.meta_controller.q_network_optimizer)
+        self.update_learning_rate(
+            self.controller_config.hyperparameters["learning_rate"], self.controller.q_network_optimizer)
+        self.update_learning_rate(
+            self.meta_controller_config.hyperparameters["learning_rate"], self.meta_controller.q_network_optimizer)
 
     def step(self):
 
@@ -48,20 +55,24 @@ class h_DQN(Base_Agent):
         while not self.episode_over:
             episode_intrinsic_rewards = []
             self.meta_controller_state = self.environment.state
-            self.subgoal = self.meta_controller.pick_action(state=self.meta_controller_state)
+            self.subgoal = self.meta_controller.pick_action(
+                state=self.meta_controller_state)
             self.goals_seen.append(self.subgoal)
             self.subgoal_achieved = False
-            self.state = np.concatenate((self.environment.state, np.array([self.subgoal])))
+            self.state = np.concatenate(
+                (self.environment.state, np.array([self.subgoal])))
             self.cumulative_meta_controller_reward = 0
 
             while not (self.episode_over or self.subgoal_achieved):
                 self.pick_and_conduct_controller_action()
                 self.update_data()
-                if self.time_to_learn(self.controller.memory, self.global_step_number, "CONTROLLER"): #means it is time to train controller
+                # means it is time to train controller
+                if self.time_to_learn(self.controller.memory, self.global_step_number, "CONTROLLER"):
                     for _ in range(self.hyperparameters["CONTROLLER"]["learning_iterations"]):
                         self.controller.learn()
-                self.save_experience(memory=self.controller.memory, experience=(self.state, self.action, self.reward, self.next_state, self.done))
-                self.state = self.next_state #this is to set the state for the next iteration
+                self.save_experience(memory=self.controller.memory, experience=(
+                    self.state, self.action, self.reward, self.next_state, self.done))
+                self.state = self.next_state  # this is to set the state for the next iteration
                 self.global_step_number += 1
                 episode_intrinsic_rewards.append(self.reward)
 
@@ -75,12 +86,16 @@ class h_DQN(Base_Agent):
             self.meta_controller_steps += 1
             self.episode_steps += 1
 
-        self.rolling_intrinsic_rewards.append(np.sum(episode_intrinsic_rewards))
+        self.rolling_intrinsic_rewards.append(
+            np.sum(episode_intrinsic_rewards))
         if self.episode_number % 100 == 0:
             print(" ")
-            print("Most common goal -- {} -- ".format( max(set(self.goals_seen[-100:]), key=self.goals_seen[-100:].count)  ))
-            print("Intrinsic Rewards -- {} -- ".format(np.mean(self.rolling_intrinsic_rewards[-100:])))
-            print("Average controller action -- {} ".format(np.mean(self.controller_actions[-100:])))
+            print("Most common goal -- {} -- ".format(
+                max(set(self.goals_seen[-100:]), key=self.goals_seen[-100:].count)))
+            print(
+                "Intrinsic Rewards -- {} -- ".format(np.mean(self.rolling_intrinsic_rewards[-100:])))
+            print(
+                "Average controller action -- {} ".format(np.mean(self.controller_actions[-100:])))
             print("Latest subgoal -- {}".format(self.goals_seen[-1]))
         self.episode_number += 1
         self.controller.episode_number += 1
@@ -88,7 +103,7 @@ class h_DQN(Base_Agent):
 
     def pick_and_conduct_controller_action(self):
         """Picks and conducts an action for controller"""
-        self.action =  self.controller.pick_action(state=self.state)
+        self.action = self.controller.pick_action(state=self.state)
         self.controller_actions.append(self.action)
         self.conduct_action()
 
@@ -102,7 +117,8 @@ class h_DQN(Base_Agent):
         """Gets the next state, reward and done information from the environment"""
         environment_next_state = self.environment.get_next_state()
         assert environment_next_state.shape[0] == 1
-        self.next_state = np.concatenate((environment_next_state, np.array([self.subgoal])))
+        self.next_state = np.concatenate(
+            (environment_next_state, np.array([self.subgoal])))
         self.subgoal_achieved = environment_next_state[0] == self.subgoal
         self.reward = 1.0 * self.subgoal_achieved
         self.done = self.subgoal_achieved or self.episode_over
@@ -116,6 +132,8 @@ class h_DQN(Base_Agent):
 
     def time_to_learn(self, memory, steps_taken, controller_name):
         """Boolean indicating whether it is time for meta-controller or controller to learn"""
-        enough_experiences = len(memory) > self.hyperparameters[controller_name]["batch_size"]
-        enough_steps_taken = steps_taken % self.hyperparameters[controller_name]["update_every_n_steps"] == 0
+        enough_experiences = len(
+            memory) > self.hyperparameters[controller_name]["batch_size"]
+        enough_steps_taken = steps_taken % self.hyperparameters[
+            controller_name]["update_every_n_steps"] == 0
         return enough_experiences and enough_steps_taken

@@ -1,9 +1,11 @@
 import copy
 import random
+
 import gym
 import numpy as np
 from gym import spaces
 from gym.utils import seeding
+
 
 class Bit_Flipping_Environment(gym.Env):
     environment_name = "Bit Flipping Game"
@@ -12,9 +14,12 @@ class Bit_Flipping_Environment(gym.Env):
 
         self.action_space = spaces.Discrete(environment_dimension)
         self.observation_space = spaces.Dict(dict(
-            desired_goal=spaces.Box(0, 1, shape=(environment_dimension,), dtype='float32'),
-            achieved_goal=spaces.Box(0, 1, shape=(environment_dimension,), dtype='float32'),
-            observation=spaces.Box(0, 1, shape=(environment_dimension,), dtype='float32'),
+            desired_goal=spaces.Box(0, 1, shape=(
+                environment_dimension,), dtype='float32'),
+            achieved_goal=spaces.Box(0, 1, shape=(
+                environment_dimension,), dtype='float32'),
+            observation=spaces.Box(0, 1, shape=(
+                environment_dimension,), dtype='float32'),
         ))
 
         self.seed()
@@ -54,7 +59,7 @@ class Bit_Flipping_Environment(gym.Env):
             action = action[0]
         assert action <= self.environment_dimension + 1, "You picked an invalid action"
         self.step_count += 1
-        if action != self.environment_dimension + 1: #otherwise no bit is flipped
+        if action != self.environment_dimension + 1:  # otherwise no bit is flipped
             self.next_state = copy.copy(self.state)
             self.next_state[action] = (self.next_state[action] + 1) % 2
         if self.goal_achieved(self.next_state):

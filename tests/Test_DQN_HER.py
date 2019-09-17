@@ -1,19 +1,20 @@
 import random
 from collections import Counter
 
+import numpy as np
 import pytest
+import torch
 
-from agents.DQN_agents.DQN_HER import DQN_HER
 from agents.DQN_agents.DDQN import DDQN
-from agents.DQN_agents.DDQN_With_Prioritised_Experience_Replay import DDQN_With_Prioritised_Experience_Replay
+from agents.DQN_agents.DDQN_With_Prioritised_Experience_Replay import \
+    DDQN_With_Prioritised_Experience_Replay
+from agents.DQN_agents.DQN import DQN
+from agents.DQN_agents.DQN_HER import DQN_HER
 from agents.DQN_agents.DQN_With_Fixed_Q_Targets import DQN_With_Fixed_Q_Targets
-from environments.Bit_Flipping_Environment import Bit_Flipping_Environment
 from agents.policy_gradient_agents.PPO import PPO
 from agents.Trainer import Trainer
+from environments.Bit_Flipping_Environment import Bit_Flipping_Environment
 from utilities.data_structures.Config import Config
-from agents.DQN_agents.DQN import DQN
-import numpy as np
-import torch
 
 random.seed(1)
 np.random.seed(1)
@@ -51,7 +52,7 @@ config.hyperparameters = {
         "gradient_clipping_norm": 5,
         "HER_sample_proportion": 0.8,
         "clip_rewards": False
-}
+    }
 }
 
 
@@ -60,12 +61,12 @@ config.hyperparameters = config.hyperparameters["DQN_Agents"]
 agent = DQN_HER(config)
 agent.reset_game()
 
+
 def test_initiation():
     """Tests whether DQN_HER initiates correctly"""
     config.hyperparameters["batch_size"] = 64
     agent = DQN_HER(config)
     agent.reset_game()
-
 
     assert agent.ordinary_buffer_batch_size == int(0.2 * 64)
     assert agent.HER_buffer_batch_size == 64 - int(0.2 * 64)
@@ -86,6 +87,7 @@ def test_initiation():
 
     config.hyperparameters["batch_size"] = 3
 
+
 def test_action():
     """Tests whether DQN_HER picks and conducts actions correctly"""
     num_tries = 1000
@@ -99,9 +101,11 @@ def test_action():
     assert actions_count[1] > num_tries*0.1
     assert actions_count[2] > num_tries*0.1
     assert actions_count[3] > num_tries*0.1
-    assert actions_count[0] + actions_count[1] + actions_count[2] + actions_count[3] == num_tries
+    assert actions_count[0] + actions_count[1] + \
+        actions_count[2] + actions_count[3] == num_tries
 
     assert agent.next_state is None
+
 
 def test_tracks_changes_from_one_action():
     """Tests that it tracks the changes as a result of actions correctly"""
@@ -115,9 +119,9 @@ def test_tracks_changes_from_one_action():
 
     assert agent.next_state.shape[0] == 8
     assert isinstance(agent.next_state_dict, dict)
-    assert not all (agent.observation == previous_obs)
+    assert not all(agent.observation == previous_obs)
     assert not all(agent.achieved_goal == previous_achieved_goal)
-    assert all (agent.desired_goal == previous_desired_goal)
+    assert all(agent.desired_goal == previous_desired_goal)
 
     agent.track_changeable_goal_episodes_data()
 
@@ -130,6 +134,7 @@ def test_tracks_changes_from_one_action():
 
     assert sample[1].item() == agent.action
     assert sample[2].item() == 4
+
 
 def test_tracks_changes_from_multiple_actions():
     """Tests that it tracks the changes as a result of actions correctly"""
@@ -153,21 +158,16 @@ def test_tracks_changes_from_multiple_actions():
 
         agent.track_changeable_goal_episodes_data()
         agent.save_experience()
-        if agent.done: agent.save_alternative_experience()
+        if agent.done:
+            agent.save_alternative_experience()
 
-        agent.state_dict = agent.next_state_dict  # this is to set the state for the next iteration
+        # this is to set the state for the next iteration
+        agent.state_dict = agent.next_state_dict
         agent.state = agent.next_state
 
     states, actions, rewards, next_states, dones = agent.HER_memory.sample(4)
 
-    assert all(states[1] == torch.Tensor([1.0, 1., 1., 1., 0., 0., 0. , 0.]))
+    assert all(states[1] == torch.Tensor([1.0, 1., 1., 1., 0., 0., 0., 0.]))
     assert all(actions == torch.Tensor([[1.], [0.], [3.], [2.]]))
     assert all(rewards == torch.Tensor([[-1.], [-1.], [4.], [-1.]]))
     assert all(dones == torch.Tensor([[0.], [0.], [1.], [0.]]))
-
-
-
-
-
-
-
